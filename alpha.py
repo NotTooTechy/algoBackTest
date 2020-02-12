@@ -33,7 +33,7 @@ class alphavantage:
 			LINK = '''https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s&outputsize=full&apikey=%s&datatype=csv'''%(self.symbol, api_key)
 			r = requests.get(LINK)
 			if r.status_code == 200:
-				data = r.content
+				data = r.content.decode('utf-8')
 				fpath = os.path.join(DATA_DIR, "%s.csv"%self.symbol)
 				print(fpath)
 				with open(fpath, 'w') as f:
