@@ -1,4 +1,3 @@
 *.pyc
-*.html
 ALPHA_STORAGE/*.csv
 ALPHA_STORAGE/*.json

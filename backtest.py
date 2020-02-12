@@ -123,8 +123,8 @@ class runroutine(strategies):
 			for avg1 in range(2, 50):
 				self.mavg1=avg1
 				self.set_moving_averages()
-				self.strategy5()
-				#getattr(self, strategy_name)()
+				#self.strategy5()
+				getattr(self, strategy_name)()
 				balance = self.result(debug)
 				if balance > max_balance:
 					max_balance = balance

@@ -1,26 +1,15 @@
 import sys
 import datetime
 
-#START_DATE=datetime.datetime(2016, 1, 16)
-#START_DATE=datetime.datetime(2016, 9, 16)
 START_DATE=datetime.datetime(2018, 2, 4)
 #START_DATE=datetime.datetime(2017, 8, 10)
-#START_DATE=datetime.datetime(2019, 2, 10)
-#START_DATE=datetime.datetime(2016, 6, 17)
-#START_DATE=datetime.datetime(2019, 1, 17)
-#START_DATE=datetime.datetime(2009, 1, 1)
-#START_DATE=datetime.datetime(2017, 1, 1)
-#START_DATE=datetime.datetime(2007, 9, 16)
+
 END_DATE=datetime.datetime.now()
 #END_DATE=datetime.datetime(2019, 10, 17)
-#END_DATE=datetime.datetime(2019, 02, 04) #2018-05-16
 
 #alpha: https://www.alphavantage.co/support/#api-key
-api_key="EAE489DPENMJ722N"
+api_key="EAE489DPE5MJ721N" # obsolete you need to get your own
 
-
-#START_DATE=datetime.datetime(2015, 1, 19)
-#START_DATE=datetime.datetime(2018, 7, 6)
 
 RISK_FACTOR = 0.9
 
