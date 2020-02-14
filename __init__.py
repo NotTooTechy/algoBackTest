@@ -26,13 +26,3 @@ TEST_DATES_LIST = [
 	datetime.datetime(2018, 8, 5),
 	datetime.datetime(2019, 2, 5)
 ]
-
-def chk_arg(argument):
-        if any(argument in s for s in sys.argv):
-                        index = [i for i, s in enumerate(sys.argv) if argument in s][0]
-                        try:
-                            ret = sys.argv[index].split('=')[1]
-                        except:
-                            return None
-                        return ret
-        return None

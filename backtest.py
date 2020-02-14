@@ -1,6 +1,7 @@
 import sys
 from __init__ import TEST_DATES_LIST
 from stockbase import tmethods
+import numpy as np
 
 def get_line_arg(line_arg):
 	if any(line_arg in x for x in sys.argv[1:]):
@@ -19,7 +20,7 @@ class strategies(tmethods):
 	''' Define Strategies '''
 
 	def strategy2(self):
-		#df_shifted_1 = self.df.shift(1, axis=0)
+		#df_shifted_1 = self.df.shift(1)
 		print(">"*20, self.start.date(), self.end.date(), "<"*20)
 		self.df['buy_signal'] = 0
 		self.df['sell_signal'] = 0
@@ -28,7 +29,7 @@ class strategies(tmethods):
 			(self.df['close'] < self.df['avg1'])
 			]['close']
 		self.df['risk_signal'] = self.df[
-			(self.df['close'] < 0.9*self.df.shift(1, axis=0)['close'])
+			(self.df['close'] < 0.9*self.df.shift(1)['close'])
 			]['close']
 		self.df['buy_signal'] = self.df[
 			(self.df['close'] > self.df['avg1'])&
@@ -47,9 +48,9 @@ class strategies(tmethods):
 			#(self.df['close'] > self.df['avg1'])&
 			(self.df['close'] > self.df['avg2'])&
 			(self.df['avg1'] > self.df['avg2'])&
-			(self.df['avg1'] > self.df.shift(1, axis=0)['avg1'])&
-			(self.df['avg2'] > self.df.shift(1, axis=0)['avg2'])&
-			(self.df.shift(1, axis=0)['avg2'] > self.df.shift(2, axis=0)['avg2'])
+			(self.df['avg1'] > self.df.shift(1)['avg1'])&
+			(self.df['avg2'] > self.df.shift(1)['avg2'])&
+			(self.df.shift(1)['avg2'] > self.df.shift(2, axis=0)['avg2'])
 			]['close']
 		#self.df.to_csv("extended_%s.csv"%self.ticker, sep='\t')
 		print(self.df.tail())
@@ -72,6 +73,10 @@ class strategies(tmethods):
 			]['close']
 
 	def strategy5(self):
+		'''
+			Buy on close above mvg, delayed sell when under mvg or
+			under stop loss
+		'''
 		print(">"*20, self.start.date(), self.end.date(), "<"*20)
 		self.df['buy_signal'] = 0
 		self.df['sell_signal'] = 0
@@ -82,8 +87,41 @@ class strategies(tmethods):
 
 		self.df['buy_signal'] = self.df[
 			(self.df['close'] > self.df['avg1'])&
-			(self.df['close'] > 1.01*self.df.shift(1, axis=0)['close'])
+			(self.df['close'] > 1.01*self.df.shift(1)['close'])
 			]['close']
+
+	def strategy6(self):
+		'''
+			Position Sizing
+		'''
+		print(">"*20, self.start.date(), self.end.date(), "<"*20)
+		# Set the initial capital
+		initial_capital= float(17000.0)
+
+
+		self.df['above_avg'] = 0
+		self.df['under_avg'] = 0
+
+		self.df['above_avg'] = np.where((self.df['close'] > self.df['avg1']), 1.0, 0.0)
+		self.df['under_avg'] = np.where(self.df['close'] < self.df['avg1'], 1.0, 0.0)
+
+		self.df['under_counter'] = self.df['under_avg'].cumsum()
+
+		self.df['sell_signal'] = np.where(self.df['under_counter'] > 6, -1, 0)
+		self.df['under_counter'] = np.where(self.df['under_counter'] > 6, 0, self.df['under_counter'])
+
+		self.df['position_size'] = 1000.0*self.df['above_avg']
+		self.df['position_value'] = self.df['position_size'].multiply(self.df['close'], axis=0)
+		self.df['diff'] = self.df['above_avg'].diff()
+
+
+		print("{0:10s}|{1:6s}|{2:6s}|{3:6s}|{4:6s}|{5:6s}|{6:8s}|{7:8s}|{8:8s}".format('Date',
+			'close', 'avg1', '>_avg', '<_avg', 'under_counter',
+			'posSize', 'posVal', 'Diff'))
+		for i, row in self.df.iterrows():
+			print("{0} {1:6.2f} {2:6.2f} {3:6.2f} {4:6.2f} {5:6.0f} {6:8.2f} {7:8.2f} {8:8.2f}".format(i.date(),
+				row['close'], row['avg1'], row['above_avg'], row['under_avg'], row['under_counter'],
+				row['position_size'], row['position_value'], row['diff']))
 
 class runroutine(strategies):
 
@@ -149,6 +187,17 @@ class runroutine(strategies):
 		self.strategy5()
 		print(self.result(debug))
 		print
+		if graph:
+			self.plotter()
+
+	def run_routine6(self, debug=False, graph=False, avg1=6, avg2=50):
+		self.load_data_from_csv()
+		self.df = self.df[(self.df.index > self.start) & (self.df.index <= self.end)]
+		print(avg1, avg2)
+		self.mavg1=avg1
+		self.mavg2=avg2
+		self.set_moving_averages()
+		self.strategy6()
 		if graph:
 			self.plotter()
 

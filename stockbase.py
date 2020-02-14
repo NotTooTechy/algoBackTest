@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 # Import Matplotlib's `pyplot` module as `plt`
 import numpy as np
 from copy import deepcopy as cp
-from __init__ import START_DATE, END_DATE, chk_arg, RISK_FACTOR, STCK_OPTIMAL_CONFIG
+from __init__ import START_DATE, END_DATE, RISK_FACTOR, STCK_OPTIMAL_CONFIG
 
 FONT_BUY=dict(family='Courier New, monospace', size=12, color='grey')
 FONT_SELL_GREEN=dict(family='Courier New, monospace', size=16, color='green')
