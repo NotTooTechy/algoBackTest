@@ -209,7 +209,8 @@ class tmethods:
 		traces.append(trace7)
 		traces.append(trace9)
 
-		layout = go.Layout(title="%s, %s"%(self.ticker.upper(),self.comment), plot_bgcolor='rgb(230, 230,230)', annotations=self.annotations)
+		# 230
+		layout = go.Layout(title="%s, %s"%(self.ticker.upper(),self.comment), plot_bgcolor='rgb(0, 0,0)', annotations=self.annotations)
 		fig = go.Figure(data=traces, layout=layout)
 		plot_filename = "%s.html"%self.ticker
 		plotly.offline.plot(fig, filename=plot_filename)
