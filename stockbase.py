@@ -199,6 +199,21 @@ class tmethods:
 			mode='lines', name="Stoh.Osc", # Additional options
 			visible="legendonly"
                 )
+		self.df = self.df.iloc[::-1]
+		table_cols = ['date', 'open', 'high', 'low', 'close', 'volume', 'avg1', 'buy_signal', 'sell_signal']
+		table = go.Table(
+					header=dict(
+						values=table_cols,
+						font=dict(size=10),
+						align="left"
+					),
+					cells=dict(
+						values=[self.df.index.date, self.df.open, self.df.high, self.df.low, self.df.close, 
+						self.df.volume, self.df.avg1, self.df.buy_signal, self.df.sell_signal],
+						#values=[self.df[k].tolist() for k in self.df.columns[index_cols]],
+						align = "left")
+				)
+
 		traces = []
 		traces.append(trace1)
 		traces.append(trace2)
@@ -209,8 +224,28 @@ class tmethods:
 		traces.append(trace7)
 		traces.append(trace9)
 
+		from plotly.subplots import make_subplots
+		afig = make_subplots(
+			rows=2, cols=1,
+			shared_xaxes=True,
+			vertical_spacing=0.08,
+			specs=[[{"type": "scatter"}],
+				#[{"type": "scatter"}],
+				[{"type": "table"}]]
+		)
+
+
 		# 230
 		layout = go.Layout(title="%s, %s"%(self.ticker.upper(),self.comment), plot_bgcolor='rgb(0, 0,0)', annotations=self.annotations)
 		fig = go.Figure(data=traces, layout=layout)
+		afig.add_trace(trace1, row=1, col=1)
+		afig.add_trace(trace2, row=1, col=1)
+		afig.add_trace(table, row=2, col=1)
+		afig.update_layout(
+			showlegend=True,
+			annotations=self.annotations
+			)
+		#afig.add_table(table.cells, row=2, col=1)
 		plot_filename = "%s.html"%self.ticker
-		plotly.offline.plot(fig, filename=plot_filename)
+		plotly.offline.plot(afig, filename=plot_filename)
+		
